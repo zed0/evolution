@@ -1,0 +1,185 @@
+<html>
+	<head>
+		<style type="text/css">
+			a
+			{
+				display: inline-block;
+				border: 1px solid black;
+			}
+		</style>
+		<script type="text/javascript">
+			function cloneObj(obj)
+			{
+				var newObj = (obj instanceof Array) ? [] : {};
+				for(var i in obj)
+				{
+					if(i == 'clone') continue;
+					if(obj[i] && typeof obj[i] == "object")
+					{
+						newObj[i] = cloneObj(obj[i]);
+					}
+					else
+					{
+						newObj[i] = obj[i];
+					}
+				}
+				return newObj;
+			};
+			function Point()
+			{
+				this.x = rand(200);
+				this.y = rand(200);
+			}
+			function Color()
+			{
+				this.r = rand(255);
+				this.g = rand(255);
+				this.b = rand(255);
+				this.a = Math.random();
+			}
+			function Curve()
+			{
+				this.p1 = new Point();
+				this.p2 = new Point();
+				this.p3 = new Point();
+			}
+			function Canvas()
+			{
+				this.contexts = new Array(new Context());
+			}
+			function Context()
+			{
+				this.color = new Color();
+				this.start = new Point();
+				this.curves = new Array(new Curve());
+				this.fill = rand(2);
+			}
+			function rand(n)
+			{
+				return (Math.floor(Math.random()*n));
+			}
+			function draw(canvasNo)
+			{
+				var canvas = document.getElementById(canvasNo);
+				var context = canvas.getContext('2d');
+				context.clearRect(0,0,200,200);
+				var current = canvases[canvasNo];
+				for(var b in current.contexts)
+				{
+					context.fillStyle = 'rgba(' + current.contexts[b].color.r + ',' + current.contexts[b].color.g + ',' + current.contexts[b].color.b + ',' + current.contexts[b].color.a + ')';
+					context.strokeStyle = 'rgba(' + current.contexts[b].color.r + ',' + current.contexts[b].color.g + ',' + current.contexts[b].color.b + ',' + current.contexts[b].color.a + ')';
+					context.beginPath();
+					context.moveTo(current.contexts[b].start.x, current.contexts[b].start.y)
+					for(var c in current.contexts[b].curves)
+					{
+						var curCurve = current.contexts[b].curves[c];
+						context.bezierCurveTo(curCurve.p1.x, curCurve.p1.y, curCurve.p2.x, curCurve.p2.y, curCurve.p3.x, curCurve.p3.y);
+					}
+					if(current.contexts[b].fill)
+					{
+						context.fill();
+					}
+					else
+					{
+						context.stroke();
+					}
+				}
+			}
+			function evolve(canvasNo)
+			{
+				for(var i in canvases)
+				{
+					canvases[i] = cloneObj(canvases[canvasNo]);
+				}
+				for(var i in canvases)
+				{
+					switch(rand(9))
+					{
+						case 0:
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+						case 5:
+						case 6:
+							//mess with a context
+							var con = rand(canvases[i].contexts.length);
+							switch(rand(6))
+							{
+								case 0:
+									//add
+									canvases[i].contexts[con].curves.push(new Curve());
+									break;
+								case 1:
+									//move
+									canvases[i].contexts[con].curves[rand(canvases[i].contexts[con].curves.length)].p1 = new Point();
+									canvases[i].contexts[con].curves[rand(canvases[i].contexts[con].curves.length)].p2 = new Point();
+									canvases[i].contexts[con].curves[rand(canvases[i].contexts[con].curves.length)].p3 = new Point();
+									break;
+								case 2:
+									//color
+									canvases[i].contexts[con].color = new Color();
+									break;
+								case 3:
+									//remove
+									canvases[i].contexts[con].curves.splice(rand(canvases[i].contexts[con].curves.length), 1);
+									break;
+								case 4:
+									//shuffle
+									canvases[i].contexts[con].curves.sort(function(){return 0.5 - Math.random()});
+									break;
+								case 5:
+									//switch draw mode
+									canvases[i].contexts[con].fill = !canvases[i].contexts[con].fill;
+									break;
+							}
+							break;
+						case 7:
+							//add a new context
+							canvases[i].contexts.push(new Context);
+							break;
+						case 8:
+							//remove a context
+							canvases[i].contexts.splice(rand(canvases[i].contexts.length),1);
+					}
+					draw(i);
+				}
+				document.getElementById("counter").innerHTML = ++count;
+			}
+			window.onload=function()
+			{
+				var n = 16;
+				count = 0;
+				document.getElementById("counter").innerHTML = count;
+				var holder = document.getElementById("holder");
+				for(var i=0; i<n; ++i)
+				{
+					if(i%4 == 0)
+					{
+						holder.innerHTML += "<br />";
+					}
+					holder.innerHTML += "<a href='javascript:evolve(" + i + ")'>\
+											<canvas id='" + i + "' width='200' height='200'>\
+												Get a better browser!\
+											</canvas>\
+										</a>";
+				}
+				canvases = new Array();
+				for(var i=0; i<n; ++i)
+				{
+					canvases[i] = new Canvas();
+				}
+				for(var i=0; i<n; ++i)
+				{
+					draw(i);
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<p id="counter">
+		</p>
+		<div id="holder">
+		</div>
+	</body>
+</html>
