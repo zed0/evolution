@@ -58,6 +58,22 @@
 			{
 				return (Math.floor(Math.random()*n));
 			}
+			function redComponent(image, x, y)
+			{
+				return image.data[((x*(image.width*4)) + (y*4)) + 0];
+			}
+			function greenComponent(image, x, y)
+			{
+				return image.data[((x*(image.width*4)) + (y*4)) + 1];
+			}
+			function blueComponent(image, x, y)
+			{
+				return image.data[((x*(image.width*4)) + (y*4)) + 2];
+			}
+			function alphaComponent(image, x, y)
+			{
+				return image.data[((x*(image.width*4)) + (y*4)) + 3];
+			}
 			function draw(canvasNo)
 			{
 				var canvas = document.getElementById(canvasNo);
@@ -84,6 +100,8 @@
 						context.stroke();
 					}
 				}
+				//alert(context.createImageData(200,200));
+				//document.getElementById("b" + canvasNo).innerHTML = blueComponent(context.createImageData(200,200),100,100);
 			}
 			function evolve(canvasNo)
 			{
@@ -161,7 +179,8 @@
 					holder.innerHTML += "<a href='javascript:evolve(" + i + ")'>\
 											<canvas id='" + i + "' width='200' height='200'>\
 												Get a better browser!\
-											</canvas>\
+												</canvas>\
+											<p id='b" + i + "'></p>\
 										</a>";
 				}
 				canvases = new Array();
