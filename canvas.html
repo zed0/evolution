@@ -60,19 +60,27 @@
 			}
 			function redComponent(image, x, y)
 			{
-				return image.data[((x*(image.width*4)) + (y*4)) + 0];
+				var imgd = image.getImageData(0, 0, 200, 200);
+				var pix = imgd.data;
+				return pix[((x*(200*4)) + (y*4)) + 0];
 			}
 			function greenComponent(image, x, y)
 			{
-				return image.data[((x*(image.width*4)) + (y*4)) + 1];
+				var imgd = image.getImageData(0, 0, 200, 200);
+				var pix = imgd.data;
+				return pix[((x*(200*4)) + (y*4)) + 1];
 			}
 			function blueComponent(image, x, y)
 			{
-				return image.data[((x*(image.width*4)) + (y*4)) + 2];
+				var imgd = image.getImageData(0, 0, 200, 200);
+				var pix = imgd.data;
+				return pix[((x*(200*4)) + (y*4)) + 2];
 			}
 			function alphaComponent(image, x, y)
 			{
-				return image.data[((x*(image.width*4)) + (y*4)) + 3];
+				var imgd = image.getImageData(0, 0, 200, 200);
+				var pix = imgd.data;
+				return pix[((x*(200*4)) + (y*4)) + 3];
 			}
 			function draw(canvasNo)
 			{
@@ -99,9 +107,9 @@
 					{
 						context.stroke();
 					}
+					document.getElementById("b" + canvasNo).innerHTML = redComponent(context, 100, 100) + "," + greenComponent(context, 100, 100) + "," + blueComponent(context, 100, 100) + "," + alphaComponent(context, 100, 100);
 				}
 				//alert(context.createImageData(200,200));
-				//document.getElementById("b" + canvasNo).innerHTML = blueComponent(context.createImageData(200,200),100,100);
 			}
 			function evolve(canvasNo)
 			{
@@ -122,6 +130,7 @@
 						case 6:
 							//mess with a context
 							var con = rand(canvases[i].contexts.length);
+							//alert(con + " " + canvases[i].contexts.length);
 							switch(rand(6))
 							{
 								case 0:
@@ -158,7 +167,10 @@
 							break;
 						case 8:
 							//remove a context
-							canvases[i].contexts.splice(rand(canvases[i].contexts.length),1);
+							if(canvases[i].contexts.length > 1)
+							{
+								canvases[i].contexts.splice(rand(canvases[i].contexts.length),1);
+							}
 					}
 					draw(i);
 				}
